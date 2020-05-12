@@ -14,10 +14,13 @@ class QuotesSpider(scrapy.Spider):
 
     def parse(self, response):
         all_div_quote = response.css('div.quote')
-        quote = all_div_quote.css('span.text::text').extract()
-        author = all_div_quote.css('small.author::text').extract()
-        tags = all_div_quote.css('a.tag::text').extract()
-        yield {
+
+        # to capture all data from one container at a time
+        for data in all_div_quote:
+            quote = data.css('span.text::text').extract()
+            author = data.css('small.author::text').extract()
+            tags = data.css('a.tag::text').extract()
+            yield {
             'quote': quote,
             'author': author,
             'tags': tags
