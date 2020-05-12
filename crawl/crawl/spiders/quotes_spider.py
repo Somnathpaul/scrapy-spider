@@ -13,5 +13,12 @@ class QuotesSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        title = response.css('title::text').extract()
-        yield {'title': title }
+        all_div_quote = response.css('div.quote')
+        quote = all_div_quote.css('span.text::text').extract()
+        author = all_div_quote.css('small.author::text').extract()
+        tags = all_div_quote.css('a.tag::text').extract()
+        yield {
+            'quote': quote,
+            'author': author,
+            'tags': tags
+        }
