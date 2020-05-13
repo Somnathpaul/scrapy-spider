@@ -1,5 +1,5 @@
 import scrapy
-
+from ..items import CrawlItem
 
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
@@ -13,6 +13,7 @@ class QuotesSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
+        items = CrawlItem()
         all_div_quote = response.css('div.quote')
 
         # to capture all data from one container at a time
@@ -20,8 +21,10 @@ class QuotesSpider(scrapy.Spider):
             quote = data.css('span.text::text').extract()
             author = data.css('small.author::text').extract()
             tags = data.css('a.tag::text').extract()
-            yield {
-            'quote': quote,
-            'author': author,
-            'tags': tags
-        }
+
+            items['quote'] = quote
+            items['author'] = author
+            items['tags'] = tags
+
+            yield items
+        
